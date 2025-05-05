@@ -24,6 +24,7 @@
 
         <!-- Styles -->
         <!-- Add your project specific styling here -->
+		<link rel="stylesheet" href="./app/styles/gamegrid.css">
 
         <!-- Enums -->
         <!-- Add your project specific enumeration types here -->
@@ -36,7 +37,7 @@
 
         <!-- Components -->
         <!-- Add your project specific components here -->
-        
+        <script defer src="./app/scripts/components/cc-gamegrid.js"></script>
 
         <!-- Services -->
         <script defer src="./app/scripts/services/App.js"></script>
@@ -45,6 +46,6 @@
         
     </head>
     <body onload="AppService.Initialise()" data-body>
-        <p>Hi I'm a hostless web framework starter kit. Check the readme to get started :)</p>
+        <cc-gamegrid></cc-gamegrid>
     </body>
 </html>

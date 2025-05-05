@@ -46,4 +46,10 @@
  * @property {Event} originatingEvent
  * @property {*} originatingObject
  */
+
+/**
+ * @typedef {Object} GameGridElements
+ * @property {Element|null} root
+ * @property {HTMLCanvasElement|null} canvas
+ */
             
