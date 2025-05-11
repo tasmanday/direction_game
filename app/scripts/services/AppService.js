@@ -36,6 +36,9 @@ class AppService {
         // Initialise event processing
         App.dispatcher = new Dispatcher();
 
+		// Add game action handler
+		App.dispatcher.addDispatchHandler(new MovementActionHandler(), "route");
+
         // Now add your action handlers
         // For example:
         //    App.dispatcher.addDispatchHandler(new MyGameHandler(), "route");
@@ -57,6 +60,11 @@ class AppService {
             return;
         }
 
+		// Add keyboard event listener
+		document.addEventListener('keydown', (event) => {
+			Log.debug(`Keydown event detected: ${event.key}`, "KEYBOARD");
+			App.dispatcher.dispatch(new Action("KeyDown", { key: event.key }));
+		});
         // Initilaise any core event bindings
         // for example:
         //    document.body.addEventListener("click", MyClickCallback);
@@ -85,6 +93,15 @@ class AppService {
             Log.fatal("Both the Store and Dispatcher must be initialised before interactive content", "", this)
             return;
         }
+
+		// Initialize game grid and character
+		const gameGrid = document.querySelector('cc-gamegrid');
+		const character = document.querySelector('cc-characters');
+
+		// Move character to starting position
+		if (character) {
+			character.moveTo(0, 0);
+		}
 
         // Initalise and wire up the UI
         // for example:

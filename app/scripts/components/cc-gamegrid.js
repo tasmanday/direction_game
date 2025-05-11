@@ -1,4 +1,4 @@
-class CCGameGrid extends CCBase {
+class CCGameGrid extends CCObservableBase {
 	static #htmlTemplate = `
 		<div data-root class="centered-flex">
 			<canvas id="game-grid-canvas" width="800" height="600"></canvas>
@@ -12,7 +12,15 @@ class CCGameGrid extends CCBase {
 	};
 
 	constructor() {
-		super();
+		let state = new ObservableCore();
+		super(state);
+		
+		state.originatingObject = this;
+		state.addSubscriber(this, this.dataChangedCallback);
+		
+		// Initialize grid state
+		this.observableData.grid = Array(12).fill().map(() => Array(16).fill('empty'));
+		
 		if (this.id === "") {
 			this.id = crypto.randomUUID();
 		}
@@ -83,6 +91,17 @@ class CCGameGrid extends CCBase {
 		}
 	}
 
+	// Add method to set cell type
+	setCellType(row, col, type) {
+		this.observableData.grid[row][col] = type;
+		this.render();
+	}
+
+	// Add method to get cell type
+	getCellType(row, col) {
+		return this.observableData.grid[row][col];
+	}
+
 	connectedCallback() {
 		this.#confirmUXIsInitialised();
 		window.addEventListener('resize', this.render.bind(this));
@@ -104,6 +123,11 @@ class CCGameGrid extends CCBase {
         this.render();
         Log.debug(`${this.constructor.name}, value ${name} changed from ${oldValue} to ${newValue}`, "COMPONENT");
     }
+
+	dataChangedCallback() {
+		this.render();
+		Log.debug(`Grid state changed`, "COMPONENT");
+	}
 }
 
 customElements.define("cc-gamegrid", CCGameGrid);

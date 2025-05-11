@@ -1,4 +1,4 @@
-class CCCharacters extends CCBase {
+class CCCharacters extends CCObservableBase {
     static #htmlTemplate = `
         <div data-root style="position: absolute; pointer-events: none;">
             <img id="blue-dot" src="./app/assets/images/teal-square.png" style="display: block;" />
@@ -11,10 +11,14 @@ class CCCharacters extends CCBase {
     };
 
     constructor() {
-        super();
-        if (this.id === "") {
-            this.id = crypto.randomUUID();
-        }
+        let state = new ObservableCore();
+        super(state);
+        
+        state.originatingObject = this;
+        state.addSubscriber(this, this.dataChangedCallback);
+        
+        // Initialize character position
+        this.observableData.position = { row: 0, col: 0 };
     }
 
     static get observedAttributes() {
@@ -28,6 +32,12 @@ class CCCharacters extends CCBase {
             this.#elements.blueDot = fragment.querySelector('#blue-dot');
             this.appendChild(fragment);
         }
+    }
+
+    // Add method to move character
+    moveTo(row, col) {
+        this.observableData.position = { row, col };
+        this.render();
     }
 
     render() {
@@ -47,26 +57,24 @@ class CCCharacters extends CCBase {
                 canvas.height / (rows + 3)
             )
         );
+        const marginX = (canvas.width - cols * cellSize) / 2;
+        const marginY = (canvas.height - rows * cellSize) / 2;
+
         // Resize the image to fit a cell
         if (this.#elements.blueDot) {
             this.#elements.blueDot.style.width = `${cellSize * 0.8}px`;
             this.#elements.blueDot.style.height = `${cellSize * 0.8}px`;
         }
-        // Position the root absolutely over the canvas
-        const rect = canvas.getBoundingClientRect();
+
+        // Position the character based on grid position
+        const { row, col } = this.observableData.position;
+        const x = marginX + (col * cellSize) + (cellSize * 0.1); // 0.1 for centering
+        const y = marginY + (row * cellSize) + (cellSize * 0.1);
+
         if (this.#elements.root) {
-            this.#elements.root.style.left = `${rect.left + window.scrollX}px`;
-            this.#elements.root.style.top = `${rect.top + window.scrollY}px`;
-            this.#elements.root.style.width = `${canvas.width}px`;
-            this.#elements.root.style.height = `${canvas.height}px`;
-            this.#elements.root.style.zIndex = '10';
+            this.#elements.root.style.left = `${x}px`;
+            this.#elements.root.style.top = `${y}px`;
         }
-        this.style.position = 'absolute';
-        this.style.left = `${rect.left + window.scrollX}px`;
-        this.style.top = `${rect.top + window.scrollY}px`;
-        this.style.width = `${canvas.width}px`;
-        this.style.height = `${canvas.height}px`;
-        this.style.pointerEvents = 'none';
     }
 
     connectedCallback() {
@@ -89,6 +97,11 @@ class CCCharacters extends CCBase {
     attributeChangedCallback(name, oldValue, newValue) {
         this.render();
         Log.debug(`${this.constructor.name}, value ${name} changed from ${oldValue} to ${newValue}`, "COMPONENT");
+    }
+
+    dataChangedCallback() {
+        this.render();
+        Log.debug(`Character position changed to row:${this.observableData.position.row}, col:${this.observableData.position.col}`, "COMPONENT");
     }
 }
 
