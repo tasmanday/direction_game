@@ -94,14 +94,18 @@ class AppService {
             return;
         }
 
-		// Initialize game grid and character
-		const gameGrid = document.querySelector('cc-gamegrid');
-		const character = document.querySelector('cc-characters');
-
-		// Move character to starting position
-		if (character) {
-			character.moveTo(0, 0);
-		}
+		 // Initialize game grid
+		 const gameGrid = document.querySelector('cc-gamegrid');
+        
+		 // Create players (example with 3 players)
+		 const numPlayers = 3;
+		 for (let i = 0; i < numPlayers; i++) {
+			 const character = document.createElement('cc-characters');
+			 character.id = `player${i + 1}`;
+			 // Position each player in a different starting position
+			 character.moveTo(0, i);  // Place them in a row
+			 document.body.appendChild(character);
+		 }
 
         // Initalise and wire up the UI
         // for example:

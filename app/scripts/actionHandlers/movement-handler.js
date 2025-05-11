@@ -13,34 +13,36 @@ class MovementActionHandler {
 	}
 
 	handleKeyPress(payload) {
-		const character = document.querySelector('cc-characters');
-		if (!character) {
-			Log.debug("Character element not found!", "MOVEMENT");
+		// Get all character elements
+		const characters = document.querySelectorAll('cc-characters');
+		if (!characters.length) {
+			Log.debug("No character elements found!", "MOVEMENT");
 			return;
 		}
 
-		const { row, col } = character.observableData.position;
-		Log.debug(`Current position - row: ${row}, col: ${col}`, "MOVEMENT");
-		
-		let newRow = row;
-		let newCol = col;
-		
-		switch (payload.key) {
-			case "ArrowUp":
-				newRow = row - 1;
-				break;
-			case "ArrowDown":
-				newRow = row + 1;
-				break;
-			case "ArrowLeft":
-				newCol = col - 1;
-				break;
-			case "ArrowRight":
-				newCol = col + 1;
-				break;
-		}
+		// Move all characters
+		characters.forEach(character => {
+			const { row, col } = character.observableData.position;
+			let newRow = row;
+			let newCol = col;
+			
+			switch (payload.key) {
+				case "ArrowUp":
+					newRow = row - 1;
+					break;
+				case "ArrowDown":
+					newRow = row + 1;
+					break;
+				case "ArrowLeft":
+					newCol = col - 1;
+					break;
+				case "ArrowRight":
+					newCol = col + 1;
+					break;
+			}
 
-		Log.debug(`Attempting to move to - row: ${newRow}, col: ${newCol}`, "MOVEMENT");
-		character.moveTo(newRow, newCol);
+			Log.debug(`Moving character ${character.id} to (${newRow},${newCol})`, "MOVEMENT");
+			character.moveTo(newRow, newCol);
+		});
 	}
 }
