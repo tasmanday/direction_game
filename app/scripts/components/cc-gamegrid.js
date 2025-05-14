@@ -11,15 +11,18 @@ class CCGameGrid extends CCObservableBase {
 		canvas: null,
 	};
 
-	constructor() {
+	constructor(rows = 12, cols = 16) {
 		let state = new ObservableCore();
 		super(state);
 		
 		state.originatingObject = this;
 		state.addSubscriber(this, this.dataChangedCallback);
+
+		this.rows = rows;
+		this.cols = cols;
 		
-		// Initialize grid state
-		this.observableData.grid = Array(12).fill().map(() => Array(16).fill('empty'));
+		// Initialise empty grid
+		this.observableData.grid = Array(rows).fill().map(() => Array(cols).fill(null));
 		
 		if (this.id === "") {
 			this.id = crypto.randomUUID();
@@ -51,8 +54,8 @@ class CCGameGrid extends CCObservableBase {
 		if (!ctx) return;
 
 		// Grid settings
-		const rows = 12;
-		const cols = 16;
+		const rows = this.rows;
+		const cols = this.cols;
 		// Margin: at least 1.5 cell widths on each side
 		// So, usable width = total width - 2 * margin
 		// margin = 1.5 * cellSize
